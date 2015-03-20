@@ -31,6 +31,8 @@ String.prototype.panelsProcessTemplate = function(){
         fn : {}
     };
 
+    var ratios = {};
+
     /**
      * Model for an instance of a widget
      */
@@ -696,7 +698,9 @@ String.prototype.panelsProcessTemplate = function(){
         builder: null,
 
         defaults :{
-            style: {}
+            style: {},
+            ctype: 1,
+            cdir: 'right'
         },
 
         /**
@@ -1133,6 +1137,14 @@ String.prototype.panelsProcessTemplate = function(){
                 if( typeof data.grids[i].style !== 'undefined' ) {
                     newRow.set( 'style', data.grids[i].style );
                 }
+
+                if( typeof data.grids[i].ctype !== 'undefined' ) {
+                    newRow.set( 'ctype', data.grids[i].ctype );
+                }
+
+                if( typeof data.grids[i].cdir !== 'undefined' ) {
+                    newRow.set( 'cdir', data.grids[i].cdir );
+                }
             } );
 
 
@@ -1212,7 +1224,9 @@ String.prototype.panelsProcessTemplate = function(){
 
                 data.grids.push( {
                     cells: row.cells.length,
-                    style: row.get('style')
+                    style: row.get('style'),
+                    ctype: row.get('ctype'),
+                    cdir: row.get('cdir')
                 } );
 
             } );
@@ -2103,7 +2117,7 @@ String.prototype.panelsProcessTemplate = function(){
                 $('body').css({'overflow':'auto'});
                 $('body').scrollTop( this.bodyScrollTop );
             }
-            
+
             // Stop listen for keyboard keypresses.
             $(window).off('keyup', this.keyboardListen);
 
@@ -2112,12 +2126,12 @@ String.prototype.panelsProcessTemplate = function(){
 
             return false;
         },
-        
+
         /**
          * Keyboard events handler
          */
         keyboardListen: function(e) {
-        
+
             // [Esc] to close
             if (e.which === 27) {
                 $('.so-panels-dialog-wrapper .so-close').trigger('click');
@@ -2982,6 +2996,15 @@ String.prototype.panelsProcessTemplate = function(){
         },
 
         initializeDialog: function(){
+
+            $.get(
+                panelsOptions.ajaxurl,
+                { action: 'so_panels_get_layouts' },
+                function(layouts){
+                    ratios = JSON.parse(layouts);
+                }
+            );
+
             this.on('open_dialog', function(){
                 if( typeof this.model !== 'undefined' && this.model.cells.length !== 0 ) {
                     this.setRowModel( this.model );
@@ -3012,7 +3035,17 @@ String.prototype.panelsProcessTemplate = function(){
          * Render the new row dialog
          */
         render: function(dialogType){
-            this.renderDialog( this.parseDialogContent( $('#siteorigin-panels-dialog-row').html(), { dialogType: this.dialogType } ) );
+            var directions = {
+                right: "Left to Right",
+                left: "Right to Left"
+            };
+
+            this.renderDialog( this.parseDialogContent( $('#siteorigin-panels-dialog-row').html(), {
+                dialogType: this.dialogType,
+                ratios: ratios,
+                directions: directions,
+                attr: this.model.attributes
+            } ) );
 
             if( this.dialogType === 'edit' ) {
                 // Now we need to attach the style window
@@ -3058,7 +3091,9 @@ String.prototype.panelsProcessTemplate = function(){
                 cells: this.model.cells.map( function(cell){
                     return cell.get('weight');
                 } ),
-                style: { }
+                style: { },
+                ctype: this.model.ctype,
+                cdir: this.model.cdir
             };
 
             // Set the initial value of the cell field.
@@ -3358,6 +3393,8 @@ String.prototype.panelsProcessTemplate = function(){
             }
 
             this.row.cells = cells;
+            this.row.ctype = f.ratio;
+            this.row.cdir = f.direction;
 
             if( cellCountChanged ) {
                 this.regenerateRowPreview();
@@ -3402,6 +3439,14 @@ String.prototype.panelsProcessTemplate = function(){
         updateModel: function(){
             // Set the cells
             this.model.setCells( this.row.cells );
+
+            if ( typeof this.row.ctype !== 'undefined') {
+                this.model.set('ctype', this.row.ctype);
+            }
+
+            if ( typeof this.row.cdir !== 'undefined') {
+                this.model.set('cdir', this.row.cdir);
+            }
 
             // Update the styles if they've loaded
             if ( typeof this.styles !== 'undefined' && this.styles.stylesLoaded ) {

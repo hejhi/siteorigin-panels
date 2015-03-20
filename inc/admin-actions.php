@@ -226,3 +226,64 @@ function siteorigin_panels_ajax_export_layout(){
 	wp_die();
 }
 add_action('wp_ajax_so_panels_export_layout', 'siteorigin_panels_ajax_export_layout');
+
+
+/**
+ * Admin ajax handler for adding custom grid layout.
+ *
+ */
+function siteorigin_panels_ajax_layout_form(){
+	$settings = siteorigin_panels_setting();
+
+	if( empty( $_REQUEST['layout_action'] ) ) exit();
+
+	$request = array_map('stripslashes_deep', $_REQUEST);
+	$action = $request['layout_action'];
+
+	switch($action) {
+		case 'add':
+			if( empty( $_REQUEST['label'] ) ) exit();
+			if( empty( $_REQUEST['ratio'] ) ) exit();
+			if( !current_user_can('manage_options') ) exit();
+
+			$label = $request['label'];
+			$name = strtolower(preg_replace(array(
+					    '/[^a-zA-Z0-9]+/',
+					    '/-+/',
+					    '/^-+/',
+					    '/-+$/',
+					 ), array('-', '-', '', ''), $label));
+
+			$ratio = $request['ratio'];
+
+			// Save the post types settings
+			$settings['row-layouts'][$name] = array( 'label' => $label, 'ratio' => $ratio );
+		break;
+		case 'remove':
+			if( empty( $_REQUEST['layout'] ) ) exit();
+			if( !current_user_can('manage_options') ) exit();
+
+			$toremove = $request['layout'];
+			$name = $toremove;
+
+			// Save the post types settings
+			unset($settings['row-layouts'][$toremove]);
+		break;
+	}
+
+	update_option('siteorigin_panels_settings', $settings);
+
+	exit($name);
+}
+add_action('wp_ajax_so_panels_layout_form', 'siteorigin_panels_ajax_layout_form');
+
+/**
+ * Get layout list from settings for js
+ *
+ */
+function siteorigin_panels_ajax_get_layouts(){
+	$settings = siteorigin_panels_setting();
+
+	exit(json_encode($settings['row-layouts']));
+}
+add_action('wp_ajax_so_panels_get_layouts', 'siteorigin_panels_ajax_get_layouts');

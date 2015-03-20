@@ -40,6 +40,13 @@
 					__('Include the bundled widgets.', 'siteorigin-panels')
 				);
 
+				siteorigin_panels_options_field(
+					'row-layouts',
+					$settings['row-layouts'],
+					__('Row Layouts', 'siteorigin-panels'),
+					__('Add or remove the row layouts you would like.', 'siteorigin-panels')
+				);
+
 				?>
 
 			</tbody>
@@ -94,4 +101,45 @@
 		</p>
 
 	</form>
+
+	<script charset="utf-8">
+		jQuery('#row-layout-submit').on('click', function(e) {
+			e.preventDefault();
+
+			var layoutLabel = jQuery('#row-layout-label').val();
+			var layoutRatio = jQuery('#row-layout-ratio').val();
+
+			jQuery.post(
+				ajaxurl,
+				{
+					action: 'so_panels_layout_form',
+					layout_action: 'add',
+					label: layoutLabel,
+					ratio: layoutRatio
+				},
+				function(name){
+					jQuery('#grid-layouts').append('<li><span class="remove-layout dashicons-no-alt dashicons-before"></span> '+name+': '+layoutRatio+'</li>');
+				}
+			);
+		});
+
+		jQuery('.remove-layout').on('click', function(e) {
+			e.preventDefault();
+
+			var toremove = jQuery(this).data('layout');
+
+			jQuery.post(
+				ajaxurl,
+				{
+					action: 'so_panels_layout_form',
+					layout_action: 'remove',
+					layout: toremove,
+				},
+				function(name){
+					jQuery('#layout-'+name).remove();
+				}
+			);
+		});
+	</script>
+
 </div>

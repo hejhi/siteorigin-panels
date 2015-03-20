@@ -124,6 +124,54 @@ class SiteOrigin_Panels_Settings {
 		// Content fields
 		$defaults['copy-content'] = true;
 
+		$defaults['row-layouts'] = array(
+			'golden' => array(
+				'label' => "Golden",
+				'ratio' => 0.61803398
+			),
+			'halves' => array(
+				'label' => "Halves",
+				'ratio' => 0.5
+			),
+			'thirds' => array(
+				'label' => "Thirds",
+				'ratio' => 0.33333333
+			),
+			'diagon' => array(
+				'label' => "Diagon",
+				'ratio' => 0.41421356
+			),
+			'hecton' => array(
+				'label' => "Hecton",
+				'ratio' => 0.73205080
+			),
+			'hemidiagon' => array(
+				'label' => "Hemidiagon",
+				'ratio' => 0.11803398
+			),
+			'penton' => array(
+				'label' => "Penton",
+				'ratio' => 0.27201964
+			),
+			'trion' => array(
+				'label' => "Trion",
+				'ratio' => 0.15470053
+			),
+			'quadriagon' => array(
+				'label' => "Quadriagon",
+				'ratio' => 0.207
+			),
+			'biauron' => array(
+				'label' => "Biauron",
+				'ratio' => 0.30901699
+			),
+			'bipenton' => array(
+				'label' => "Bipenton",
+				'ratio' => 0.46
+			)
+		);
+
+
 		return $defaults;
 	}
 
@@ -179,6 +227,8 @@ class SiteOrigin_Panels_Settings {
 	 * @return mixed
 	 */
 	function settings_fields( $fields ){
+		$settings = siteorigin_panels_setting();
+
 		// The post types fields
 
 		$fields['general'] = array(
@@ -255,6 +305,13 @@ class SiteOrigin_Panels_Settings {
 			'keywords' => 'margin',
 		);
 
+		$fields['layout']['fields']['row-layouts'] = array(
+			'type' => 'custom-ratios',
+			'label' => __('Grid Layouts', 'siteorigin-panels'),
+			'options' => $settings['row-layouts'],
+			'description' => __('Custom layout ratios.', 'siteorigin-panels'),
+		);
+
 		// The content fields
 
 		$fields['content'] = array(
@@ -327,6 +384,20 @@ class SiteOrigin_Panels_Settings {
 					<?php
 				}
 
+				break;
+
+			case 'custom-ratios':
+				?><ul id="grid-layouts"><?
+				foreach ($field['options'] as $option_id => $option) {
+				?><li id="layout-<? echo $option_id; ?>"><span data-layout="<? echo $option_id; ?>" class="remove-layout dashicons-no-alt dashicons-before"></span> <?echo $option_id;?>: <?echo $field['options'][$option_id]['ratio'];?></li><?
+				}
+				?></ul>
+				<br/>
+				<h3>Add Custom Ratio</h3>
+				<label for="">Label: </label> <input id="row-layout-label" type="text" /><br/>
+				<label for="">Ratio: </label> <input id="row-layout-ratio" type="number" /><br/><br/>
+				<input type="submit" name="" id="row-layout-submit" class="button-secondary" value="Add Layout">
+				<?
 				break;
 		}
 	}

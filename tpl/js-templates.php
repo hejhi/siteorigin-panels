@@ -261,22 +261,14 @@ $layouts = apply_filters( 'siteorigin_panels_prebuilt_layouts', array() );
 				<input type="number" min="1" max="8" name="cells"  class="so-row-field" value="2" />
 				<span><?php _e('Columns with Ratio') ?></span>
 				<select name="ratio" class="so-row-field">
-					<option value="1"><?php esc_html_e('Even', 'siteorigin-panels') ?></option>
-					<option value="0.61803398"><?php esc_html_e('Golden', 'siteorigin-panels') ?></option>
-					<option value="0.5"><?php esc_html_e('Halves', 'siteorigin-panels') ?></option>
-					<option value="0.33333333"><?php esc_html_e('Thirds', 'siteorigin-panels') ?></option>
-					<option value="0.41421356"><?php esc_html_e('Diagon', 'siteorigin-panels') ?></option>
-					<option value="0.73205080"><?php esc_html_e('Hecton', 'siteorigin-panels') ?></option>
-					<option value="0.11803398"><?php esc_html_e('Hemidiagon', 'siteorigin-panels') ?></option>
-					<option value="0.27201964"><?php esc_html_e('Penton', 'siteorigin-panels') ?></option>
-					<option value="0.15470053"><?php esc_html_e('Trion', 'siteorigin-panels') ?></option>
-					<option value="0.207"><?php esc_html_e('Quadriagon', 'siteorigin-panels') ?></option>
-					<option value="0.30901699"><?php esc_html_e('Biauron', 'siteorigin-panels') ?></option>
-					<option value="0.46"><?php esc_html_e('Bipenton', 'siteorigin-panels') ?></option>
+					<% _.each(ratios, function(ratio) { %>
+					<option value="<%= ratio.ratio %>" <% if (attr.ctype == ratio.ratio) { %>selected<% } %>><%= ratio.label %></option>
+					<% }); %>
 				</select>
 				<select name="ratio_direction" class="so-row-field">
-					<option value="right"><?php esc_html_e('Left to Right', 'siteorigin-panels') ?></option>
-					<option value="left"><?php esc_html_e('Right to Left', 'siteorigin-panels') ?></option>
+					<% _.each(directions, function(direction, key) { %>
+					<option value="<%= key %>" <% if (attr.cdir === key) { %>selected<% } %>><%= direction %></option>
+					<% }); %>
 				</select>
 				<button class="button-secondary set-row"><?php esc_html_e('Set', 'siteorigin-panels') ?></button>
 			</div>
