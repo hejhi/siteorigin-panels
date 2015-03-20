@@ -395,7 +395,7 @@ class SiteOrigin_Panels_Settings {
 				<br/>
 				<h3>Add Custom Ratio</h3>
 				<label for="">Label: </label> <input id="row-layout-label" type="text" /><br/>
-				<label for="">Ratio: </label> <input id="row-layout-ratio" type="number" /><br/><br/>
+				<label for="">Ratio: </label> <input id="row-layout-ratio" type="number" step="any" /><br/><br/>
 				<input type="submit" name="" id="row-layout-submit" class="button-secondary" value="Add Layout">
 				<?
 				break;
@@ -460,6 +460,12 @@ class SiteOrigin_Panels_Settings {
 						foreach( $multi_values as $k => $v ) {
 							if( $v ) $values[$field_id][] = $k;
 						}
+
+						break;
+
+					case 'custom-ratios':
+						$settings = siteorigin_panels_setting();
+						$values[$field_id] = $settings['row-layouts'];
 
 						break;
 				}
